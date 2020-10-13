@@ -3,6 +3,7 @@
         <label if:true={label} class="slds-form-element__label" for="combobox">
             <abbr if:true={required} title="required" class="slds-required">*</abbr>
             {label}
+            <slot name="label"></slot>
         </label>
         <div class="slds-form-element__control">
             <div class={getContainerClass}>
