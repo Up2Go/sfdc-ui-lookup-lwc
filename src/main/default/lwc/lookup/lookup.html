@@ -11,11 +11,7 @@
                     <!-- Search input start -->
                     <div class={getComboboxClass} role="none">
                         <template if:false={isMultiEntry}>
-                            <c-icon 
-                                name={getSelectIconName}
-                                size="small"
-                                class={getSelectIconClass}> 
-                            </c-icon>
+                            <c-icon name={getSelectIconName} size="small" class={getSelectIconClass}> </c-icon>
                         </template>
 
                         <!-- Text input -->
@@ -87,10 +83,7 @@
                                         data-recordid={item.result.id}
                                     >
                                         <span class="slds-media__figure">
-                                            <c-icon
-                                                name={item.result.icon}
-                                                size="small"> 
-                                            </c-icon>
+                                            <c-icon name={item.result.icon} size="small"> </c-icon>
                                         </span>
                                         <span class="slds-media__body">
                                             <span class="slds-listbox__option-text_entity">
