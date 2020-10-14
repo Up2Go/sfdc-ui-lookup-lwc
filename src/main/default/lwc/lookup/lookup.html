@@ -11,13 +11,11 @@
                     <!-- Search input start -->
                     <div class={getComboboxClass} role="none">
                         <template if:false={isMultiEntry}>
-                            <lightning-icon
-                                icon-name={getSelectIconName}
+                            <c-icon 
+                                name={getSelectIconName}
                                 size="small"
-                                alternative-text="Selected item icon"
-                                class={getSelectIconClass}
-                            >
-                            </lightning-icon>
+                                class={getSelectIconClass}> 
+                            </c-icon>
                         </template>
 
                         <!-- Text input -->
@@ -89,11 +87,10 @@
                                         data-recordid={item.result.id}
                                     >
                                         <span class="slds-media__figure">
-                                            <lightning-icon
-                                                icon-name={item.result.icon}
-                                                size="small"
-                                                alternative-text="Result item icon"
-                                            ></lightning-icon>
+                                            <c-icon
+                                                name={item.result.icon}
+                                                size="small"> 
+                                            </c-icon>
                                         </span>
                                         <span class="slds-media__body">
                                             <span class="slds-listbox__option-text_entity">
@@ -145,7 +142,7 @@
                                     onremove={handleRemoveSelectedItem}
                                     name={item.id}
                                 >
-                                    <lightning-icon icon-name={item.icon}></lightning-icon>
+                                    <c-icon name={item.icon} size="x-small"></c-icon>
                                 </lightning-pill>
                             </li>
                         </template>
