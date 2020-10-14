@@ -88,8 +88,8 @@ describe('c-lookup rendering', () => {
         document.body.appendChild(element);
 
         // Verify selected icon
-        const selIcon = element.shadowRoot.querySelector('lightning-icon');
-        expect(selIcon.alternativeText).toBe('Selected item icon');
+        const selIcon = element.shadowRoot.querySelector('c-icon');
+        expect(selIcon.size).toBe('small');
         // Verify clear selection button
         const clearSelButton = element.shadowRoot.querySelector('button');
         expect(clearSelButton.title).toBe('Remove selected option');
