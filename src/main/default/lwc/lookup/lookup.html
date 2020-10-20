@@ -11,7 +11,7 @@
                     <!-- Search input start -->
                     <div class={getComboboxClass} role="none">
                         <template if:false={isMultiEntry}>
-                            <c-icon name={getSelectIconName} size="small" class={getSelectIconClass}> </c-icon>
+                            <c-resource-icon name={getSelectIconName} size="small" class={getSelectIconClass}> </c-resource-icon>
                         </template>
 
                         <!-- Text input -->
@@ -83,7 +83,7 @@
                                         data-recordid={item.result.id}
                                     >
                                         <span class="slds-media__figure">
-                                            <c-icon name={item.result.icon} size="small"> </c-icon>
+                                            <c-resource-icon name={item.result.icon} size="small"> </c-resource-icon>
                                         </span>
                                         <span class="slds-media__body">
                                             <span class="slds-listbox__option-text_entity">
@@ -135,7 +135,7 @@
                                     onremove={handleRemoveSelectedItem}
                                     name={item.id}
                                 >
-                                    <c-icon name={item.icon} size="x-small"></c-icon>
+                                    <c-resource-icon name={item.icon} size="x-small"></c-resource-icon>
                                 </lightning-pill>
                             </li>
                         </template>
