@@ -3,3 +3,5 @@
 .vscode
 **/jsconfig.json
 /coverage
+
+submodules

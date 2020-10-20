@@ -3,6 +3,7 @@
         <label if:true={label} class="slds-form-element__label" for="combobox">
             <abbr if:true={required} title="required" class="slds-required">*</abbr>
             {label}
+            <slot name="label"></slot>
         </label>
         <div class="slds-form-element__control">
             <div class={getContainerClass}>
@@ -10,13 +11,8 @@
                     <!-- Search input start -->
                     <div class={getComboboxClass} role="none">
                         <template if:false={isMultiEntry}>
-                            <lightning-icon
-                                icon-name={getSelectIconName}
-                                size="small"
-                                alternative-text="Selected item icon"
-                                class={getSelectIconClass}
-                            >
-                            </lightning-icon>
+                            <c-resource-icon name={getSelectIconName} size="small" class={getSelectIconClass}>
+                            </c-resource-icon>
                         </template>
 
                         <!-- Text input -->
@@ -59,7 +55,8 @@
                                     size="x-small"
                                     alternative-text="Remove selected option"
                                     class="slds-button__icon"
-                                ></lightning-icon>
+                                >
+                                </lightning-icon>
                             </button>
                         </template>
                     </div>
@@ -88,11 +85,7 @@
                                         data-recordid={item.result.id}
                                     >
                                         <span class="slds-media__figure">
-                                            <lightning-icon
-                                                icon-name={item.result.icon}
-                                                size="small"
-                                                alternative-text="Result item icon"
-                                            ></lightning-icon>
+                                            <c-resource-icon name={item.result.icon} size="small"> </c-resource-icon>
                                         </span>
                                         <span class="slds-media__body">
                                             <span class="slds-listbox__option-text_entity">
@@ -144,7 +137,7 @@
                                     onremove={handleRemoveSelectedItem}
                                     name={item.id}
                                 >
-                                    <lightning-icon icon-name={item.icon}></lightning-icon>
+                                    <c-resource-icon name={item.icon} size="x-small"></c-resource-icon>
                                 </lightning-pill>
                             </li>
                         </template>
