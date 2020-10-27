@@ -12,6 +12,8 @@ export default class Lookup extends LightningElement {
     @api required;
     @api placeholder = '';
     @api isMultiEntry = false;
+    @api hideResults = false;
+    get showResults() {return this.isMultiEntry && !this.hideResults}
     @api errors = [];
     @api scrollAfterNItems;
 
