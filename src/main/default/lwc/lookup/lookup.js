@@ -1,7 +1,7 @@
 import { LightningElement, api } from 'lwc';
 
-const MINIMAL_SEARCH_TERM_LENGTH = 2; // Min number of chars required to search
-const SEARCH_DELAY = 300; // Wait 300 ms after user stops typing then, peform search
+const MINIMAL_SEARCH_TERM_LENGTH = 0; // Min number of chars required to search
+const SEARCH_DELAY = 500; // Wait 300 ms after user stops typing then, perform search
 const ARROW_UP = 38;
 const ARROW_DOWN = 40;
 const ENTER = 13;
@@ -14,9 +14,11 @@ export default class Lookup extends LightningElement {
     @api isMultiEntry = false;
     @api hideResults = false;
     get showResults() {return this.isMultiEntry && !this.hideResults}
-    @api errors = [];
     @api scrollAfterNItems;
     @api iconResources = {};
+    @api errorMessage;
+    @api error;
+    @api disabled;
 
     // Template properties
     searchResultsLocalState = [];
@@ -135,6 +137,7 @@ export default class Lookup extends LightningElement {
             if (this._cleanSearchTerm.length >= MINIMAL_SEARCH_TERM_LENGTH) {
                 // Display spinner until results are returned
                 this.loading = true;
+                this._hasFocus = true;
 
                 const searchEvent = new CustomEvent('search', {
                     detail: {
@@ -165,8 +168,8 @@ export default class Lookup extends LightningElement {
 
     processSelectionUpdate(isUserInteraction) {
         // Reset search
-        this._cleanSearchTerm = '';
-        this._searchTerm = '';
+        this._cleanSearchTerm = null;
+        this._searchTerm = null;
         // Remove selected items from default search results
         const selectedIds = this._curSelection.map((sel) => sel.id);
         let defaultResults = [...this._defaultSearchResults];
@@ -184,7 +187,7 @@ export default class Lookup extends LightningElement {
 
     handleInput(event) {
         // Prevent action if selection is not allowed
-        if (!this.isSelectionAllowed()) {
+        if (!this.isSelectionAllowed() || this.disabled) {
             return;
         }
         this.updateSearchTerm(event.target.value);
@@ -228,6 +231,7 @@ export default class Lookup extends LightningElement {
         const newSelection = [...this._curSelection];
         newSelection.push(selectedItem);
         this._curSelection = newSelection;
+        this._hasFocus = false;
 
         // Process selection update
         this.processSelectionUpdate(true);
@@ -246,13 +250,14 @@ export default class Lookup extends LightningElement {
         this.template.querySelector('input').focus();
     }
 
-    handleFocus() {
+    handleFocus(evt) {
         // Prevent action if selection is not allowed
         if (!this.isSelectionAllowed()) {
             return;
         }
         this._hasFocus = true;
         this._focusedResultIndex = null;
+        this.handleInput(evt);
     }
 
     handleBlur() {
@@ -261,6 +266,17 @@ export default class Lookup extends LightningElement {
             return;
         }
         this._hasFocus = false;
+    }
+
+    handleOnClick(evt) {
+        if (!this.isSelectionAllowed()) {
+            return;
+        }
+
+        if (this._hasFocus === false) {
+            this._hasFocus = true;
+            this.handleInput(evt);
+        }
     }
 
     handleRemoveSelectedItem(event) {
@@ -281,10 +297,10 @@ export default class Lookup extends LightningElement {
 
     get getContainerClass() {
         let css = 'slds-combobox_container slds-has-inline-listbox ';
-        if (this._hasFocus && this.hasResults()) {
+        if (this._hasFocus && this.loading) {
             css += 'slds-has-input-focus ';
         }
-        if (this.errors.length > 0) {
+        if (this.error) {
             css += 'has-custom-error';
         }
         return css;
@@ -292,8 +308,7 @@ export default class Lookup extends LightningElement {
 
     get getDropdownClass() {
         let css = 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ';
-        const isSearchTermValid = this._cleanSearchTerm && this._cleanSearchTerm.length >= MINIMAL_SEARCH_TERM_LENGTH;
-        if (this._hasFocus && this.isSelectionAllowed() && (isSearchTermValid || this.hasResults())) {
+        if (this._hasFocus && this.isSelectionAllowed()) {
             css += 'slds-is-open';
         }
         return css;
@@ -301,7 +316,7 @@ export default class Lookup extends LightningElement {
 
     get getInputClass() {
         let css = 'slds-input slds-combobox__input has-custom-height ';
-        if (this.errors.length > 0 || (this._isDirty && this.required && !this.hasSelection())) {
+        if (this.error || (this._isDirty && this.required && !this.hasSelection())) {
             css += 'has-custom-error ';
         }
         if (!this.isMultiEntry) {

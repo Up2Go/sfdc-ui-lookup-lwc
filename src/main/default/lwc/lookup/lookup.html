@@ -24,6 +24,7 @@
                             autocomplete="off"
                             role="textbox"
                             id="combobox"
+                            disabled={disabled}
                             placeholder={placeholder}
                             value={getInputValue}
                             title={getInputTitle}
@@ -32,7 +33,7 @@
                             onblur={handleBlur}
                             oninput={handleInput}
                             onkeydown={handleKeyDown}
-                        />
+                            onclick={handleOnClick} />
 
                         <!-- Search icon -->
                         <lightning-icon
@@ -146,13 +147,13 @@
             </template>
             <!-- Multi-selection end -->
 
-            <!-- Errors start -->
-            <template for:each={errors} for:item="error">
-                <label key={error.id} role="alert" class="slds-form-element__label slds-var-m-top_xx-small form-error"
-                    >{error.message}</label
-                >
+            <!-- Error start -->
+            <template if:true={error}>
+                <label role="alert" class="slds-form-element__label slds-var-m-top_xx-small form-error">
+                    {errorMessage}
+                </label>
             </template>
-            <!-- Errors end -->
+            <!-- Error end -->
         </div>
     </div>
 </template>
