@@ -16,6 +16,7 @@ export default class Lookup extends LightningElement {
     get showResults() {return this.isMultiEntry && !this.hideResults}
     @api errors = [];
     @api scrollAfterNItems;
+    @api iconResources = {};
 
     // Template properties
     searchResultsLocalState = [];
