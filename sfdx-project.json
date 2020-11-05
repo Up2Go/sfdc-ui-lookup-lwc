@@ -23,7 +23,7 @@
                     "package": "04t1T000000RcvqQAC"
                 },
                 {
-                    "package": "04t1T000000RcwPQAS"
+                    "package": "04t1T000000RcwZQAS"
                 }
             ]
         },
@@ -38,6 +38,8 @@
         "sfdx-ui-lookup-lwc": "0Ho1T000000PAu4SAG",
         "sfdx-ui-lookup-lwc@0.1.0-1": "04t1T000000Rcw0QAC",
         "sfdx-ui-lookup-lwc@0.1.0-2": "04t1T000000RcwFQAS",
-        "sfdx-ui-lookup-lwc@0.1.0-3": "04t1T000000RcwKQAS"
+        "sfdx-ui-lookup-lwc@0.1.0-3": "04t1T000000RcwKQAS",
+        "sfdx-ui-lookup-lwc@0.1.0-4": "04t1T000000RcwUQAS",
+        "sfdx-ui-lookup-lwc@0.1.0-5": "04t1T000000RcweQAC"
     }
 }

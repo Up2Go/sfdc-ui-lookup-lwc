@@ -85,7 +85,7 @@
                                         data-recordid={item.result.id}
                                     >
                                         <span class="slds-media__figure">
-                                            <c-resource-icon name={item.result.icon} size="small"> </c-resource-icon>
+                                            <c-resource-icon name={item.result.icon} size="small" resources={iconResources}> </c-resource-icon>
                                         </span>
                                         <span class="slds-media__body">
                                             <span class="slds-listbox__option-text_entity">
@@ -137,7 +137,7 @@
                                     onremove={handleRemoveSelectedItem}
                                     name={item.id}
                                 >
-                                    <c-resource-icon name={item.icon} size="x-small"></c-resource-icon>
+                                    <c-resource-icon name={item.icon} size="x-small" resources={iconResources}></c-resource-icon>
                                 </lightning-pill>
                             </li>
                         </template>
