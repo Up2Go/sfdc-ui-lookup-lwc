@@ -23,7 +23,7 @@
                     "package": "04t1T000000RcvqQAC"
                 },
                 {
-                    "package": "04t1T000000RcwAQAS"
+                    "package": "04t1T000000RcwPQAS"
                 }
             ]
         },
@@ -37,6 +37,7 @@
     "packageAliases": {
         "sfdx-ui-lookup-lwc": "0Ho1T000000PAu4SAG",
         "sfdx-ui-lookup-lwc@0.1.0-1": "04t1T000000Rcw0QAC",
-        "sfdx-ui-lookup-lwc@0.1.0-2": "04t1T000000RcwFQAS"
+        "sfdx-ui-lookup-lwc@0.1.0-2": "04t1T000000RcwFQAS",
+        "sfdx-ui-lookup-lwc@0.1.0-3": "04t1T000000RcwKQAS"
     }
 }
