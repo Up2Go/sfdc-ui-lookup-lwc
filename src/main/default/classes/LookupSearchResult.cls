@@ -17,6 +17,10 @@ public class LookupSearchResult implements Comparable {
         this.subtitle = subtitle;
     }
 
+    public LookupSearchResult(String id, String title, String icon) {
+        this(id, null, icon, title, null);
+    }
+
     @AuraEnabled
     public Id getId() {
         return id;
