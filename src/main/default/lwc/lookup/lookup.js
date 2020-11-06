@@ -114,9 +114,6 @@ export default class Lookup extends LightningElement {
 
         // Compare clean new search term with current one and abort if identical
         const newCleanSearchTerm = newSearchTerm.trim().replace(/\*/g, '').toLowerCase();
-        if (this._cleanSearchTerm === newCleanSearchTerm) {
-            return;
-        }
 
         // Save clean search term
         this._cleanSearchTerm = newCleanSearchTerm;
@@ -168,8 +165,9 @@ export default class Lookup extends LightningElement {
 
     processSelectionUpdate(isUserInteraction) {
         // Reset search
-        this._cleanSearchTerm = null;
-        this._searchTerm = null;
+        this._cleanSearchTerm = '';
+        this._searchTerm = '';
+        this._hasFocus = false;
         // Remove selected items from default search results
         const selectedIds = this._curSelection.map((sel) => sel.id);
         let defaultResults = [...this._defaultSearchResults];
@@ -231,7 +229,6 @@ export default class Lookup extends LightningElement {
         const newSelection = [...this._curSelection];
         newSelection.push(selectedItem);
         this._curSelection = newSelection;
-        this._hasFocus = false;
 
         // Process selection update
         this.processSelectionUpdate(true);
@@ -252,7 +249,7 @@ export default class Lookup extends LightningElement {
 
     handleFocus(evt) {
         // Prevent action if selection is not allowed
-        if (!this.isSelectionAllowed()) {
+        if (!this.isSelectionAllowed() || this._hasFocus) {
             return;
         }
         this._hasFocus = true;
