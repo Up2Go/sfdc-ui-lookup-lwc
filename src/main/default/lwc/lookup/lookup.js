@@ -19,6 +19,7 @@ export default class Lookup extends LightningElement {
     @api errorMessage;
     @api error;
     @api disabled;
+    @api dispatchSearchEventOnEachRequest = false;
 
     // Template properties
     searchResultsLocalState = [];
@@ -118,6 +119,10 @@ export default class Lookup extends LightningElement {
         // Compare clean new search term with current one and abort if identical
         const newCleanSearchTerm = newSearchTerm.trim().replace(/\*/g, '').toLowerCase();
 
+        if (!this.dispatchSearchEventOnEachRequest && this._cleanSearchTerm === newCleanSearchTerm) {
+            return;
+        }
+
         // Save clean search term
         this._cleanSearchTerm = newCleanSearchTerm;
 
@@ -168,8 +173,8 @@ export default class Lookup extends LightningElement {
 
     processSelectionUpdate(isUserInteraction) {
         // Reset search
-        this._cleanSearchTerm = '';
-        this._searchTerm = '';
+        this._cleanSearchTerm = null;
+        this._searchTerm = null;
         this._hasFocus = false;
         // Remove selected items from default search results
         const selectedIds = this._curSelection.map((sel) => sel.id);
