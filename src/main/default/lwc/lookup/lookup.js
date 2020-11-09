@@ -35,7 +35,7 @@ export default class Lookup extends LightningElement {
     _defaultSearchResults = [];
     _curSelection = [];
     _focusedResultIndex = null;
-    _availableSearchResults = 0;
+    _totalSearchResults = 0;
 
     // PUBLIC FUNCTIONS AND GETTERS/SETTERS
     @api
@@ -51,7 +51,7 @@ export default class Lookup extends LightningElement {
 
     @api
     setSearchResults(results, totalSearchResults) {
-        this._availableSearchResults = totalSearchResults;
+        this._totalSearchResults = totalSearchResults;
 
         // Reset the spinner
         this.loading = false;
@@ -106,7 +106,7 @@ export default class Lookup extends LightningElement {
     setDefaultResults(results) {
         this._defaultSearchResults = [...results];
         if (this._searchResults.length === 0) {
-            this.setSearchResults(this._defaultSearchResults, this._availableSearchResults);
+            this.setSearchResults(this._defaultSearchResults, this._totalSearchResults);
         }
     }
 
@@ -123,7 +123,7 @@ export default class Lookup extends LightningElement {
 
         // Ignore search terms that are too small
         if (newCleanSearchTerm.length < MINIMAL_SEARCH_TERM_LENGTH) {
-            this.setSearchResults(this._defaultSearchResults, this._availableSearchResults);
+            this.setSearchResults(this._defaultSearchResults, this._totalSearchResults);
             return;
         }
 
@@ -175,7 +175,7 @@ export default class Lookup extends LightningElement {
         const selectedIds = this._curSelection.map((sel) => sel.id);
         let defaultResults = [...this._defaultSearchResults];
         defaultResults = defaultResults.filter((result) => selectedIds.indexOf(result.id) === -1);
-        this.setSearchResults(defaultResults, this._availableSearchResults);
+        this.setSearchResults(defaultResults, this._totalSearchResults);
         // Indicate that component was interacted with
         this._isDirty = isUserInteraction;
         // If selection was changed by user, notify parent components
@@ -391,6 +391,6 @@ export default class Lookup extends LightningElement {
     }
 
     get hasMoreResultsToDisplay() {
-        return this.searchResultsLocalState.length !== 0 && this.searchResultsLocalState.length < this._availableSearchResults;
+        return this.searchResultsLocalState.length !== 0 && this.searchResultsLocalState.length < this._totalSearchResults;
     }
 }
