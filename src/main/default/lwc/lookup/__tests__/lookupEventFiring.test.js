@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import Lookup from 'c/lookup';
 
-const SAMPLE_SEARCH_TOO_SHORT = 'A ';
+const EMPTY_SEARCH_STRING = '';
 const SAMPLE_SEARCH_RAW = 'Sample search* ';
 const SAMPLE_SEARCH_CLEAN = 'sample search';
 const SAMPLE_SEARCH_ITEMS = [
@@ -57,7 +57,7 @@ describe('c-lookup event fires', () => {
         });
     });
 
-    it('search event does not fires when search term is too short', () => {
+    it('fire search event even search term is empty', () => {
         jest.useFakeTimers();
 
         // Create element with mock search handler
@@ -70,14 +70,14 @@ describe('c-lookup event fires', () => {
 
         // Set search term and force input change
         const searchInput = element.shadowRoot.querySelector('input');
-        searchInput.value = SAMPLE_SEARCH_TOO_SHORT;
+        searchInput.value = EMPTY_SEARCH_STRING;
         searchInput.dispatchEvent(new CustomEvent('input'));
 
         // Disable search throttling
         jest.runAllTimers();
 
-        // Check that search event wasn't fired
-        expect(mockSearchFn).not.toBeCalled();
+        // Check that search event is fired
+        expect(mockSearchFn).toBeCalled();
     });
 
     it('search event does not fires twice when search term matches clean search term', () => {
