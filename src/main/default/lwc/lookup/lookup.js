@@ -1,6 +1,5 @@
 import { LightningElement, api } from 'lwc';
 
-const MINIMAL_SEARCH_TERM_LENGTH = 0; // Min number of chars required to search
 const SEARCH_DELAY = 500; // Wait 300 ms after user stops typing then, perform search
 const ARROW_UP = 38;
 const ARROW_DOWN = 40;
@@ -19,6 +18,7 @@ export default class Lookup extends LightningElement {
     @api errors;
     @api hasError;
     @api disabled;
+    @api minimalSearchTermLength = 0;
 
     // Template properties
     searchResultsLocalState = [];
@@ -122,7 +122,7 @@ export default class Lookup extends LightningElement {
         this._cleanSearchTerm = newCleanSearchTerm;
 
         // Ignore search terms that are too small
-        if (newCleanSearchTerm.length < MINIMAL_SEARCH_TERM_LENGTH) {
+        if (newCleanSearchTerm.length < this.minimalSearchTermLength) {
             this.setSearchResults(this._defaultSearchResults, this._totalSearchResults);
             return;
         }
@@ -134,7 +134,7 @@ export default class Lookup extends LightningElement {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         this._searchThrottlingTimeout = setTimeout(() => {
             // Send search event if search term is long enougth
-            if (this._cleanSearchTerm.length >= MINIMAL_SEARCH_TERM_LENGTH) {
+            if (this._cleanSearchTerm.length >= this.minimalSearchTermLength) {
                 // Display spinner until results are returned
                 this.loading = true;
                 this._hasFocus = true;
