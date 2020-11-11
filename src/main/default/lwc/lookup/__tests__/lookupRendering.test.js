@@ -148,18 +148,34 @@ describe('c-lookup rendering', () => {
         expect(selPills[1].title).toBe(SAMPLE_SELECTION_ITEMS[1].title);
     });
 
-    it('renders error', () => {
+    it('renders errors', () => {
         // Create element
         const element = createElement('c-lookup', {
             is: Lookup
         });
-        element.error = true;
-        element.errorMessage = 'Sample error';
+        element.hasError = true;
+        element.errors = [{id: '1', message: 'First error message'}, {id: '2', message: 'Second error message'} ]
         document.body.appendChild(element);
 
         // Verify errors
         const errors = element.shadowRoot.querySelectorAll('label.form-error');
-        expect(errors.length).toBe(1);
-        expect(errors[0].textContent).toBe('Sample error');
+        expect(errors.length).toBe(2);
+        expect(errors[0].textContent).toBe('First error message');
+        expect(errors[1].textContent).toBe('Second error message');
+    });
+
+    it('show refine search text when passed search results are less than actual search results', () => {
+        // Create element
+        const element = createElement('c-lookup', {
+            is: Lookup
+        });
+        element.setSearchResults(SAMPLE_SELECTION_ITEMS, 5);
+        document.body.appendChild(element);
+
+        // Verify errors
+        const refineSearch = element.shadowRoot.querySelector('span.slds-float_right');
+
+        expect(refineSearch).not.toBeNull();
+        expect(refineSearch.textContent).toEqual('Please refine your search to see more results');
     });
 });

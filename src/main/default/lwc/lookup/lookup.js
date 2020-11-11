@@ -16,10 +16,9 @@ export default class Lookup extends LightningElement {
     get showResults() {return this.isMultiEntry && !this.hideResults}
     @api scrollAfterNItems;
     @api iconResources = {};
-    @api errorMessage;
-    @api error;
+    @api errors;
+    @api hasError;
     @api disabled;
-    @api dispatchSearchEventOnEachRequest = false;
 
     // Template properties
     searchResultsLocalState = [];
@@ -118,10 +117,6 @@ export default class Lookup extends LightningElement {
 
         // Compare clean new search term with current one and abort if identical
         const newCleanSearchTerm = newSearchTerm.trim().replace(/\*/g, '').toLowerCase();
-
-        if (!this.dispatchSearchEventOnEachRequest && this._cleanSearchTerm === newCleanSearchTerm) {
-            return;
-        }
 
         // Save clean search term
         this._cleanSearchTerm = newCleanSearchTerm;
@@ -305,7 +300,7 @@ export default class Lookup extends LightningElement {
         if (this._hasFocus && this.loading) {
             css += 'slds-has-input-focus ';
         }
-        if (this.error) {
+        if (this.hasError) {
             css += 'has-custom-error';
         }
         return css;
@@ -321,7 +316,7 @@ export default class Lookup extends LightningElement {
 
     get getInputClass() {
         let css = 'slds-input slds-combobox__input has-custom-height ';
-        if (this.error || (this._isDirty && this.required && !this.hasSelection())) {
+        if (this.hasError || (this._isDirty && this.required && !this.hasSelection())) {
             css += 'has-custom-error ';
         }
         if (!this.isMultiEntry) {
