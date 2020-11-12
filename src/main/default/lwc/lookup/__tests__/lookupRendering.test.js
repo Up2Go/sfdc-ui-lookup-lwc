@@ -153,7 +153,6 @@ describe('c-lookup rendering', () => {
         const element = createElement('c-lookup', {
             is: Lookup
         });
-        element.hasError = true;
         element.errors = [{id: '1', message: 'First error message'}, {id: '2', message: 'Second error message'} ]
         document.body.appendChild(element);
 
