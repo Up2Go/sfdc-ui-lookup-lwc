@@ -1,10 +1,10 @@
 {
     "packageDirectories": [
         {
-            "path": "submodules\\up2go-clean\\sfdx-source\\submodules\\fflib-apex-mocks\\sfdx-source"
+            "path": "submodules\\fflib-apex-mocks\\sfdx-source"
         },
         {
-            "path": "submodules\\up2go-clean\\sfdx-source\\submodules\\fflib-apex-common\\sfdx-source"
+            "path": "submodules\\fflib-apex-common\\sfdx-source"
         },
         {
             "path": "submodules\\up2go-clean\\sfdx-source\\up2go-clean"
@@ -17,13 +17,13 @@
             "versionNumber": "0.1.0.NEXT",
             "dependencies": [
                 {
-                    "package": "04t1T000000RcvMQAS"
+                    "package": "04t1T000000RcxwQAC"
                 },
                 {
-                    "package": "04t1T000000RcvqQAC"
+                    "package": "04t1T000000Rcy1QAC"
                 },
                 {
-                    "package": "04t1T000000RcwZQAS"
+                    "package": "04t1T000000RcyGQAS"
                 }
             ]
         },
@@ -40,6 +40,8 @@
         "sfdx-ui-lookup-lwc@0.1.0-2": "04t1T000000RcwFQAS",
         "sfdx-ui-lookup-lwc@0.1.0-3": "04t1T000000RcwKQAS",
         "sfdx-ui-lookup-lwc@0.1.0-4": "04t1T000000RcwUQAS",
-        "sfdx-ui-lookup-lwc@0.1.0-5": "04t1T000000RcweQAC"
+        "sfdx-ui-lookup-lwc@0.1.0-5": "04t1T000000RcweQAC",
+        "sfdx-ui-lookup-lwc@0.1.0-6": "04t1T000000RcwoQAC",
+        "sfdx-ui-lookup-lwc@0.1.0-7": "04t1T000000RcyLQAS"
     }
 }
