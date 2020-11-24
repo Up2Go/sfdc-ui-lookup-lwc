@@ -1,5 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
+const MINIMAL_SEARCH_TERM_LENGTH = 2; // Min number of chars required to search
 const SEARCH_DELAY = 500; // Wait 300 ms after user stops typing then, perform search
 const ARROW_UP = 38;
 const ARROW_DOWN = 40;
@@ -16,8 +17,11 @@ export default class Lookup extends LightningElement {
     @api scrollAfterNItems;
     @api iconResources = {};
     @api errors = [];
-    @api disabled;
-    @api minimalSearchTermLength = 0;
+    @api disabled = false;
+    @api minimalSearchTermLength = MINIMAL_SEARCH_TERM_LENGTH;
+    @api resultsToDisplay = 100;
+    get minimalSearchQueryLength() {return this.allowEmptySearchQuery ? 0 : this.minimalSearchTermLength}
+    @api allowEmptySearchQuery = false;
 
     // Template properties
     searchResultsLocalState = [];
@@ -34,7 +38,7 @@ export default class Lookup extends LightningElement {
     _defaultSearchResults = [];
     _curSelection = [];
     _focusedResultIndex = null;
-    _totalSearchResults = 0;
+    _searchResultsCount = 0;
 
     // PUBLIC FUNCTIONS AND GETTERS/SETTERS
     @api
@@ -49,16 +53,15 @@ export default class Lookup extends LightningElement {
     }
 
     @api
-    setSearchResults(results, totalSearchResults) {
-        this._totalSearchResults = totalSearchResults;
-
+    setSearchResults(results) {
+        this._searchResultsCount = results.length;
         // Reset the spinner
         this.loading = false;
         // Clone results before modifying them to avoid Locker restriction
         const resultsLocal = JSON.parse(JSON.stringify(results));
         // Format results
         const regex = new RegExp(`(${this._searchTerm})`, 'gi');
-        this._searchResults = resultsLocal.map((result) => {
+        this._searchResults = resultsLocal.splice(0, this.resultsToDisplay).map((result) => {
             // Format title and subtitle
             if (this._searchTerm.length > 0) {
                 result.titleFormatted = result.title
@@ -105,7 +108,7 @@ export default class Lookup extends LightningElement {
     setDefaultResults(results) {
         this._defaultSearchResults = [...results];
         if (this._searchResults.length === 0) {
-            this.setSearchResults(this._defaultSearchResults, this._totalSearchResults);
+            this.setSearchResults(this._defaultSearchResults);
         }
     }
 
@@ -117,12 +120,16 @@ export default class Lookup extends LightningElement {
         // Compare clean new search term with current one and abort if identical
         const newCleanSearchTerm = newSearchTerm.trim().replace(/\*/g, '').toLowerCase();
 
+        if (!this.allowEmptySearchQuery && this._cleanSearchTerm === newCleanSearchTerm) {
+            return;
+        }
+
         // Save clean search term
         this._cleanSearchTerm = newCleanSearchTerm;
 
         // Ignore search terms that are too small
-        if (newCleanSearchTerm.length < this.minimalSearchTermLength) {
-            this.setSearchResults(this._defaultSearchResults, this._totalSearchResults);
+        if (newCleanSearchTerm.length < this.minimalSearchQueryLength) {
+            this.setSearchResults(this._defaultSearchResults);
             return;
         }
 
@@ -133,10 +140,9 @@ export default class Lookup extends LightningElement {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         this._searchThrottlingTimeout = setTimeout(() => {
             // Send search event if search term is long enougth
-            if (this._cleanSearchTerm.length >= this.minimalSearchTermLength) {
+            if (this._cleanSearchTerm.length >= this.minimalSearchQueryLength) {
                 // Display spinner until results are returned
                 this.loading = true;
-                this._hasFocus = true;
 
                 const searchEvent = new CustomEvent('search', {
                     detail: {
@@ -167,14 +173,13 @@ export default class Lookup extends LightningElement {
 
     processSelectionUpdate(isUserInteraction) {
         // Reset search
-        this._cleanSearchTerm = null;
-        this._searchTerm = null;
-        this._hasFocus = false;
+        this._cleanSearchTerm = '';
+        this._searchTerm = '';
         // Remove selected items from default search results
         const selectedIds = this._curSelection.map((sel) => sel.id);
         let defaultResults = [...this._defaultSearchResults];
         defaultResults = defaultResults.filter((result) => selectedIds.indexOf(result.id) === -1);
-        this.setSearchResults(defaultResults, this._totalSearchResults);
+        this.setSearchResults(defaultResults);
         // Indicate that component was interacted with
         this._isDirty = isUserInteraction;
         // If selection was changed by user, notify parent components
@@ -187,7 +192,7 @@ export default class Lookup extends LightningElement {
 
     handleInput(event) {
         // Prevent action if selection is not allowed
-        if (!this.isSelectionAllowed() || this.disabled) {
+        if (!this.isSelectionAllowed()) {
             return;
         }
         this.updateSearchTerm(event.target.value);
@@ -251,12 +256,11 @@ export default class Lookup extends LightningElement {
 
     handleFocus(evt) {
         // Prevent action if selection is not allowed
-        if (!this.isSelectionAllowed() || this._hasFocus) {
+        if (!this.isSelectionAllowed()) {
             return;
         }
         this._hasFocus = true;
         this._focusedResultIndex = null;
-        this.handleInput(evt);
     }
 
     handleBlur() {
@@ -267,18 +271,11 @@ export default class Lookup extends LightningElement {
         this._hasFocus = false;
     }
 
-    handleOnClick(evt) {
-        if (!this.isSelectionAllowed()) {
+    handleRemoveSelectedItem(event) {
+        if (this.disabled) {
             return;
         }
 
-        if (this._hasFocus === false) {
-            this._hasFocus = true;
-            this.handleInput(evt);
-        }
-    }
-
-    handleRemoveSelectedItem(event) {
         const recordId = event.currentTarget.name;
         this._curSelection = this._curSelection.filter((item) => item.id !== recordId);
         // Process selection update
@@ -286,6 +283,10 @@ export default class Lookup extends LightningElement {
     }
 
     handleClearSelection() {
+        if (this.disabled) {
+            return;
+        }
+
         this._curSelection = [];
         this._hasFocus = false;
         // Process selection update
@@ -296,10 +297,10 @@ export default class Lookup extends LightningElement {
 
     get getContainerClass() {
         let css = 'slds-combobox_container slds-has-inline-listbox ';
-        if (this._hasFocus && this.loading) {
+        if (this._hasFocus && this.hasResults()) {
             css += 'slds-has-input-focus ';
         }
-        if (this.hasErrors) {
+        if (this.errors.length > 0) {
             css += 'has-custom-error';
         }
         return css;
@@ -307,7 +308,9 @@ export default class Lookup extends LightningElement {
 
     get getDropdownClass() {
         let css = 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ';
-        if (this._hasFocus && this.isSelectionAllowed()) {
+        const isSearchTermValid = this._cleanSearchTerm && this._cleanSearchTerm.length >= this.minimalSearchQueryLength;
+
+        if (this._hasFocus && this.isSelectionAllowed() && (isSearchTermValid || this.hasResults())) {
             css += 'slds-is-open';
         }
         return css;
@@ -315,7 +318,7 @@ export default class Lookup extends LightningElement {
 
     get getInputClass() {
         let css = 'slds-input slds-combobox__input has-custom-height ';
-        if (this.hasErrors || (this._isDirty && this.required && !this.hasSelection())) {
+        if (this.errors.length > 0 || (this._isDirty && this.required && !this.hasSelection())) {
             css += 'has-custom-error ';
         }
         if (!this.isMultiEntry) {
@@ -390,10 +393,6 @@ export default class Lookup extends LightningElement {
     }
 
     get hasMoreResultsToDisplay() {
-        return this.searchResultsLocalState.length !== 0 && this.searchResultsLocalState.length < this._totalSearchResults;
-    }
-
-    get hasErrors() {
-        return this.errors && this.errors.length > 0;
+        return this._hasFocus && this._searchResultsCount > this.resultsToDisplay;
     }
 }

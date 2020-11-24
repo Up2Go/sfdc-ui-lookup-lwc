@@ -163,18 +163,38 @@ describe('c-lookup rendering', () => {
         expect(errors[1].textContent).toBe('Second error message');
     });
 
-    it('show refine search text when passed search results are less than actual search results', () => {
+    it('refineSearchErrorMessage', () => {
         // Create element
         const element = createElement('c-lookup', {
             is: Lookup
         });
-        element.setSearchResults(SAMPLE_SELECTION_ITEMS, 5);
+        element.resultsToDisplay = 1;
+        element.setSearchResults(SAMPLE_SELECTION_ITEMS);
         document.body.appendChild(element);
+        element.shadowRoot.querySelector('input').focus();
 
-        // Verify errors
-        const refineSearch = element.shadowRoot.querySelector('span.slds-float_right');
+        // Query for rendered list items
+        return Promise.resolve().then(() => {
+            const refineSearch = element.shadowRoot.querySelector('div > span');
+            expect(refineSearch).not.toBeNull();
+            expect(refineSearch.textContent).toEqual('Please refine your search to see more results');
+        });
+    });
 
-        expect(refineSearch).not.toBeNull();
-        expect(refineSearch.textContent).toEqual('Please refine your search to see more results');
+    it('limitSearchResults', () => {
+        // Create element
+        const element = createElement('c-lookup', {
+            is: Lookup
+        });
+        element.resultsToDisplay = 1;
+        document.body.appendChild(element);
+        element.setSearchResults(SAMPLE_SELECTION_ITEMS);
+
+        // Query for rendered list items
+        return Promise.resolve().then(() => {
+            const listItemEls = element.shadowRoot.querySelectorAll('span[role=option]');
+            expect(listItemEls.length).toBe(1);
+            expect(listItemEls[0].dataset.recordid).toBe(SAMPLE_SELECTION_ITEMS[0].id);
+        });
     });
 });

@@ -129,4 +129,43 @@ describe('c-lookup event handling', () => {
             expect(element.selection[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
         });
     });
+
+    it('disabledInputPreventsRemovalOfMultiSelectSelection', () => {
+        // Create element with mock selection handler
+        const mockSelectionCallback = jest.fn();
+        const element = createElement('c-lookup', {
+            is: Lookup
+        });
+        element.addEventListener('selectionchange', mockSelectionCallback);
+        element.disabled = true;
+        element.isMultiEntry = true;
+        element.selection = SAMPLE_SEARCH_ITEMS;
+        document.body.appendChild(element);
+
+        // Remove a selected item
+        const selPills = element.shadowRoot.querySelectorAll('lightning-pill');
+        selPills[0].dispatchEvent(new CustomEvent('remove'));
+
+        // Check callback
+        expect(mockSelectionCallback).not.toBeCalled();
+    });
+
+    it('disabledInputPreventsSelectionRemoval', () => {
+        // Create element with mock selection handler
+        const mockSelectionCallback = jest.fn();
+        const element = createElement('c-lookup', {
+            is: Lookup
+        });
+        element.addEventListener('selectionchange', mockSelectionCallback);
+        element.disabled = true;
+        element.isMultiEntry = false;
+        element.selection = SAMPLE_SEARCH_ITEMS[0];
+        document.body.appendChild(element);
+
+        // Click delete button
+        element.shadowRoot.querySelector('div[role=none] > button').click();
+
+        // Check callback
+        expect(mockSelectionCallback).not.toBeCalled();
+    });
 });

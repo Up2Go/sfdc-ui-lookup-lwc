@@ -33,8 +33,7 @@
                             onfocus={handleFocus}
                             onblur={handleBlur}
                             oninput={handleInput}
-                            onkeydown={handleKeyDown}
-                            onclick={handleOnClick} />
+                            onkeydown={handleKeyDown} />
 
                         <!-- Search icon -->
                         <lightning-icon
@@ -149,12 +148,10 @@
             <!-- Multi-selection end -->
 
             <!-- Error start -->
-            <template if:true={hasErrors}>
-                <template for:each={errors} for:item="error">
-                    <label key={error.id} role="alert" class="slds-form-element__label slds-var-m-top_xx-small form-error">
-                        {error.message}
-                    </label>
-                </template>
+            <template for:each={errors} for:item="error">
+                <label key={error.id} role="alert" class="slds-form-element__label slds-var-m-top_xx-small form-error">
+                    {error.message}
+                </label>
             </template>
             <!-- Error end -->
         </div>

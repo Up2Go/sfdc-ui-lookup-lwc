@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 import Lookup from 'c/lookup';
 
 const EMPTY_SEARCH_STRING = '';
+const SAMPLE_SEARCH_TOO_SHORT = 'A ';
 const SAMPLE_SEARCH_RAW = 'Sample search* ';
 const SAMPLE_SEARCH_CLEAN = 'sample search';
 const SAMPLE_SEARCH_ITEMS = [
@@ -57,7 +58,7 @@ describe('c-lookup event fires', () => {
         });
     });
 
-    it('fire search event even search term is empty', () => {
+    it('search event does not fires when search term is too short', () => {
         jest.useFakeTimers();
 
         // Create element with mock search handler
@@ -70,17 +71,17 @@ describe('c-lookup event fires', () => {
 
         // Set search term and force input change
         const searchInput = element.shadowRoot.querySelector('input');
-        searchInput.value = EMPTY_SEARCH_STRING;
+        searchInput.value = SAMPLE_SEARCH_TOO_SHORT;
         searchInput.dispatchEvent(new CustomEvent('input'));
 
         // Disable search throttling
         jest.runAllTimers();
 
-        // Check that search event is fired
-        expect(mockSearchFn).toBeCalled();
+        // Check that search event isn't fired
+        expect(mockSearchFn).not.toBeCalled();
     });
 
-    it('search event get fires even search term matches clean search term', () => {
+    it('search event does not fires twice when search term matches clean search term', () => {
         jest.useFakeTimers();
 
         // Create element with mock search handler
@@ -107,7 +108,7 @@ describe('c-lookup event fires', () => {
         jest.runAllTimers();
 
         // Check fired search event
-        expect(mockSearchFn).toHaveBeenCalledTimes(2);
+        expect(mockSearchFn).toHaveBeenCalledTimes(1);
         const searchEvent = mockSearchFn.mock.calls[0][0];
         expect(searchEvent.detail).toEqual({
             searchTerm: SAMPLE_SEARCH_CLEAN,
@@ -115,27 +116,27 @@ describe('c-lookup event fires', () => {
         });
     });
 
-    it('search event does not fires when input is disabled', () => {
+    it('searchEventFiredOnEmptySearchTerm', () => {
         jest.useFakeTimers();
 
-        // Create element
+        // Create element and mock search handler
         const mockSearchFn = jest.fn();
         const element = createElement('c-lookup', {
             is: Lookup
         });
+        element.allowEmptySearchQuery = true;
         element.addEventListener('search', mockSearchFn);
-        element.disabled = true;
         document.body.appendChild(element);
 
         // Set search term and force input change
         const searchInput = element.shadowRoot.querySelector('input');
-        searchInput.value = SAMPLE_SEARCH_RAW;
+        searchInput.value = EMPTY_SEARCH_STRING;
         searchInput.dispatchEvent(new CustomEvent('input'));
 
         // Disable search throttling
         jest.runAllTimers();
 
-        // Check fired search event
-        expect(mockSearchFn).toHaveBeenCalledTimes(0);
+        // Check that search event is fired
+        expect(mockSearchFn).toBeCalled();
     });
 });
