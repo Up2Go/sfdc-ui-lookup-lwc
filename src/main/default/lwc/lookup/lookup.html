@@ -1,5 +1,6 @@
 <template>
     <div class="slds-form-element">
+        <span if:true={hasMoreResultsToDisplay} class="slds-float_right slds-text-body_small">Please refine your search to see more results</span>
         <label if:true={label} class="slds-form-element__label" for="combobox">
             <abbr if:true={required} title="required" class="slds-required">*</abbr>
             {label}
@@ -24,6 +25,7 @@
                             autocomplete="off"
                             role="textbox"
                             id="combobox"
+                            disabled={disabled}
                             placeholder={placeholder}
                             value={getInputValue}
                             title={getInputTitle}
@@ -149,7 +151,7 @@
             <!-- Errors start -->
             <template for:each={errors} for:item="error">
                 <label key={error.id} role="alert" class="slds-form-element__label slds-var-m-top_xx-small form-error"
-                    >{error.message}</label
+                >{error.message}</label
                 >
             </template>
             <!-- Errors end -->

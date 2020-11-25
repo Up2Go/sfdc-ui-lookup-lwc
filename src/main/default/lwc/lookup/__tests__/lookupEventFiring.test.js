@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import Lookup from 'c/lookup';
 
+const EMPTY_SEARCH_STRING = '';
 const SAMPLE_SEARCH_TOO_SHORT = 'A ';
 const SAMPLE_SEARCH_RAW = 'Sample search* ';
 const SAMPLE_SEARCH_CLEAN = 'sample search';
@@ -76,7 +77,7 @@ describe('c-lookup event fires', () => {
         // Disable search throttling
         jest.runAllTimers();
 
-        // Check that search event wasn't fired
+        // Check that search event isn't fired
         expect(mockSearchFn).not.toBeCalled();
     });
 

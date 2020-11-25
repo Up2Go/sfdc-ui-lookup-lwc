@@ -17,6 +17,9 @@ export default class Lookup extends LightningElement {
     @api errors = [];
     @api scrollAfterNItems;
     @api iconResources = {};
+    @api disabled = false;
+    @api minimalSearchTermLength = MINIMAL_SEARCH_TERM_LENGTH;
+    @api maxDisplayedResults = 100;
 
     // Template properties
     searchResultsLocalState = [];
@@ -33,6 +36,7 @@ export default class Lookup extends LightningElement {
     _defaultSearchResults = [];
     _curSelection = [];
     _focusedResultIndex = null;
+    _numberOfAvailableSearchResults = 0;
 
     // PUBLIC FUNCTIONS AND GETTERS/SETTERS
     @api
@@ -48,13 +52,17 @@ export default class Lookup extends LightningElement {
 
     @api
     setSearchResults(results) {
+        this._numberOfAvailableSearchResults = results.length;
         // Reset the spinner
         this.loading = false;
         // Clone results before modifying them to avoid Locker restriction
         const resultsLocal = JSON.parse(JSON.stringify(results));
         // Format results
         const regex = new RegExp(`(${this._searchTerm})`, 'gi');
-        this._searchResults = resultsLocal.map((result) => {
+
+        const splicedResults = resultsLocal.splice(0, this.maxDisplayedResults);
+
+        this._searchResults = splicedResults.map((result) => {
             // Format title and subtitle
             if (this._searchTerm.length > 0) {
                 result.titleFormatted = result.title
@@ -112,6 +120,7 @@ export default class Lookup extends LightningElement {
 
         // Compare clean new search term with current one and abort if identical
         const newCleanSearchTerm = newSearchTerm.trim().replace(/\*/g, '').toLowerCase();
+
         if (this._cleanSearchTerm === newCleanSearchTerm) {
             return;
         }
@@ -120,7 +129,7 @@ export default class Lookup extends LightningElement {
         this._cleanSearchTerm = newCleanSearchTerm;
 
         // Ignore search terms that are too small
-        if (newCleanSearchTerm.length < MINIMAL_SEARCH_TERM_LENGTH) {
+        if (newCleanSearchTerm.length < this.minimalSearchTermLength) {
             this.setSearchResults(this._defaultSearchResults);
             return;
         }
@@ -132,7 +141,7 @@ export default class Lookup extends LightningElement {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         this._searchThrottlingTimeout = setTimeout(() => {
             // Send search event if search term is long enougth
-            if (this._cleanSearchTerm.length >= MINIMAL_SEARCH_TERM_LENGTH) {
+            if (this._cleanSearchTerm.length >= this.minimalSearchTermLength) {
                 // Display spinner until results are returned
                 this.loading = true;
 
@@ -264,6 +273,11 @@ export default class Lookup extends LightningElement {
     }
 
     handleRemoveSelectedItem(event) {
+        //Note: replace the condition with hooks https://www.lightningdesignsystem.com/platforms/lightning/styling-hooks/
+        if (this.disabled) {
+            return;
+        }
+
         const recordId = event.currentTarget.name;
         this._curSelection = this._curSelection.filter((item) => item.id !== recordId);
         // Process selection update
@@ -271,6 +285,10 @@ export default class Lookup extends LightningElement {
     }
 
     handleClearSelection() {
+        if (this.disabled) {
+            return;
+        }
+
         this._curSelection = [];
         this._hasFocus = false;
         // Process selection update
@@ -292,7 +310,8 @@ export default class Lookup extends LightningElement {
 
     get getDropdownClass() {
         let css = 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ';
-        const isSearchTermValid = this._cleanSearchTerm && this._cleanSearchTerm.length >= MINIMAL_SEARCH_TERM_LENGTH;
+        const isSearchTermValid = this._cleanSearchTerm && this._cleanSearchTerm.length >= this.minimalSearchTermLength;
+
         if (this._hasFocus && this.isSelectionAllowed() && (isSearchTermValid || this.hasResults())) {
             css += 'slds-is-open';
         }
@@ -343,6 +362,7 @@ export default class Lookup extends LightningElement {
         return 'slds-combobox__input-entity-icon ' + (this.hasSelection() ? '' : 'slds-hide');
     }
 
+    @api
     get getInputValue() {
         if (this.isMultiEntry) {
             return this._searchTerm;
@@ -373,5 +393,9 @@ export default class Lookup extends LightningElement {
 
     get isExpanded() {
         return this.hasResults();
+    }
+
+    get hasMoreResultsToDisplay() {
+        return this._hasFocus && this._numberOfAvailableSearchResults > this.maxDisplayedResults;
     }
 }

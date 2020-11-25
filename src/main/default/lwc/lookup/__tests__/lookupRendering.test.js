@@ -153,15 +153,48 @@ describe('c-lookup rendering', () => {
         const element = createElement('c-lookup', {
             is: Lookup
         });
-        element.errors = [
-            { id: 'e1', message: 'Sample error 1' },
-            { id: 'e2', message: 'Sample error 2' }
-        ];
+        element.errors = [{id: '1', message: 'First error message'}, {id: '2', message: 'Second error message'} ]
         document.body.appendChild(element);
 
         // Verify errors
         const errors = element.shadowRoot.querySelectorAll('label.form-error');
         expect(errors.length).toBe(2);
-        expect(errors[0].textContent).toBe('Sample error 1');
+        expect(errors[0].textContent).toBe('First error message');
+        expect(errors[1].textContent).toBe('Second error message');
+    });
+
+    it('refineSearchErrorMessage', () => {
+        // Create element
+        const element = createElement('c-lookup', {
+            is: Lookup
+        });
+        element.maxDisplayedResults = 1;
+        element.setSearchResults(SAMPLE_SELECTION_ITEMS);
+        document.body.appendChild(element);
+        element.shadowRoot.querySelector('input').focus();
+
+        // Query for rendered list items
+        return Promise.resolve().then(() => {
+            const refineSearch = element.shadowRoot.querySelector('div > span');
+            expect(refineSearch).not.toBeNull();
+            expect(refineSearch.textContent).toEqual('Please refine your search to see more results');
+        });
+    });
+
+    it('limitSearchResults', () => {
+        // Create element
+        const element = createElement('c-lookup', {
+            is: Lookup
+        });
+        element.maxDisplayedResults = 1;
+        document.body.appendChild(element);
+        element.setSearchResults(SAMPLE_SELECTION_ITEMS);
+
+        // Query for rendered list items
+        return Promise.resolve().then(() => {
+            const listItemEls = element.shadowRoot.querySelectorAll('span[role=option]');
+            expect(listItemEls.length).toBe(1);
+            expect(listItemEls[0].dataset.recordid).toBe(SAMPLE_SELECTION_ITEMS[0].id);
+        });
     });
 });
