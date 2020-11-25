@@ -115,28 +115,4 @@ describe('c-lookup event fires', () => {
             selectedIds: []
         });
     });
-
-    it('searchEventFiredOnEmptySearchTerm', () => {
-        jest.useFakeTimers();
-
-        // Create element and mock search handler
-        const mockSearchFn = jest.fn();
-        const element = createElement('c-lookup', {
-            is: Lookup
-        });
-        element.allowEmptySearchQuery = true;
-        element.addEventListener('search', mockSearchFn);
-        document.body.appendChild(element);
-
-        // Set search term and force input change
-        const searchInput = element.shadowRoot.querySelector('input');
-        searchInput.value = EMPTY_SEARCH_STRING;
-        searchInput.dispatchEvent(new CustomEvent('input'));
-
-        // Disable search throttling
-        jest.runAllTimers();
-
-        // Check that search event is fired
-        expect(mockSearchFn).toBeCalled();
-    });
 });

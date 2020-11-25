@@ -168,7 +168,7 @@ describe('c-lookup rendering', () => {
         const element = createElement('c-lookup', {
             is: Lookup
         });
-        element.resultsToDisplay = 1;
+        element.maxDisplayedResults = 1;
         element.setSearchResults(SAMPLE_SELECTION_ITEMS);
         document.body.appendChild(element);
         element.shadowRoot.querySelector('input').focus();
@@ -186,7 +186,7 @@ describe('c-lookup rendering', () => {
         const element = createElement('c-lookup', {
             is: Lookup
         });
-        element.resultsToDisplay = 1;
+        element.maxDisplayedResults = 1;
         document.body.appendChild(element);
         element.setSearchResults(SAMPLE_SELECTION_ITEMS);
 
