@@ -58,7 +58,8 @@ export default class Lookup extends LightningElement {
         // Clone results before modifying them to avoid Locker restriction
         const resultsLocal = JSON.parse(JSON.stringify(results));
         // Format results
-        const regex = new RegExp(`(${this._searchTerm})`, 'gi');
+        const escapedSearchTerm = this._searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
 
         const splicedResults = resultsLocal.splice(0, this.maxDisplayedResults);
 
