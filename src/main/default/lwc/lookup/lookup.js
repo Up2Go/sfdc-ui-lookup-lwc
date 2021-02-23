@@ -1,24 +1,33 @@
 import { LightningElement, api } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 
-const MINIMAL_SEARCH_TERM_LENGTH = 2; // Min number of chars required to search
 const SEARCH_DELAY = 300; // Wait 300 ms after user stops typing then, peform search
-const ARROW_UP = 38;
-const ARROW_DOWN = 40;
-const ENTER = 13;
 
-export default class Lookup extends LightningElement {
+const KEY_ARROW_UP = 38;
+const KEY_ARROW_DOWN = 40;
+const KEY_ENTER = 13;
+
+const VARIANT_LABEL_STACKED = 'label-stacked';
+const VARIANT_LABEL_INLINE = 'label-inline';
+const VARIANT_LABEL_HIDDEN = 'label-hidden';
+
+const REGEX_TRAP = /[+\\?^${}()|[\]\\]/g;
+
+export default class Lookup extends NavigationMixin(LightningElement) {
     // Public properties
-    @api label;
-    @api required;
+    @api variant = VARIANT_LABEL_STACKED;
+    @api label = '';
+    @api required = false;
+    @api disabled = false;
     @api placeholder = '';
     @api isMultiEntry = false;
     @api hideResults = false;
     get showResults() {return this.isMultiEntry && !this.hideResults}
     @api errors = [];
-    @api scrollAfterNItems;
+    @api scrollAfterNItems = null;
+    @api newRecordOptions = [];
+    @api minSearchTermLength = 2;
     @api iconResources = {};
-    @api disabled = false;
-    @api minimalSearchTermLength = MINIMAL_SEARCH_TERM_LENGTH;
     @api maxDisplayedResults = 100;
 
     // Template properties
@@ -58,8 +67,8 @@ export default class Lookup extends LightningElement {
         // Clone results before modifying them to avoid Locker restriction
         const resultsLocal = JSON.parse(JSON.stringify(results));
         // Format results
-        const escapedSearchTerm = this._searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
+        const cleanSearchTerm = this._searchTerm.replace(REGEX_TRAP, '');
+        const regex = new RegExp(`(${cleanSearchTerm})`, 'gi');
 
         const splicedResults = resultsLocal.splice(0, this.maxDisplayedResults);
 
@@ -130,7 +139,7 @@ export default class Lookup extends LightningElement {
         this._cleanSearchTerm = newCleanSearchTerm;
 
         // Ignore search terms that are too small
-        if (newCleanSearchTerm.length < this.minimalSearchTermLength) {
+        if (newCleanSearchTerm.length < this.minSearchTermLength) {
             this.setSearchResults(this._defaultSearchResults);
             return;
         }
@@ -142,13 +151,14 @@ export default class Lookup extends LightningElement {
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         this._searchThrottlingTimeout = setTimeout(() => {
             // Send search event if search term is long enougth
-            if (this._cleanSearchTerm.length >= this.minimalSearchTermLength) {
+            if (this._cleanSearchTerm.length >= this.minSearchTermLength) {
                 // Display spinner until results are returned
                 this.loading = true;
 
                 const searchEvent = new CustomEvent('search', {
                     detail: {
                         searchTerm: this._cleanSearchTerm,
+                        rawSearchTerm: newSearchTerm,
                         selectedIds: this._curSelection.map((element) => element.id)
                     }
                 });
@@ -163,10 +173,6 @@ export default class Lookup extends LightningElement {
             return true;
         }
         return !this.hasSelection();
-    }
-
-    hasResults() {
-        return this._searchResults.length > 0;
     }
 
     hasSelection() {
@@ -204,21 +210,21 @@ export default class Lookup extends LightningElement {
         if (this._focusedResultIndex === null) {
             this._focusedResultIndex = -1;
         }
-        if (event.keyCode === ARROW_DOWN) {
+        if (event.keyCode === KEY_ARROW_DOWN) {
             // If we hit 'down', select the next item, or cycle over.
             this._focusedResultIndex++;
             if (this._focusedResultIndex >= this._searchResults.length) {
                 this._focusedResultIndex = 0;
             }
             event.preventDefault();
-        } else if (event.keyCode === ARROW_UP) {
+        } else if (event.keyCode === KEY_ARROW_UP) {
             // If we hit 'up', select the previous item, or cycle over.
             this._focusedResultIndex--;
             if (this._focusedResultIndex < 0) {
                 this._focusedResultIndex = this._searchResults.length - 1;
             }
             event.preventDefault();
-        } else if (event.keyCode === ENTER && this._hasFocus && this._focusedResultIndex >= 0) {
+        } else if (event.keyCode === KEY_ENTER && this._hasFocus && this._focusedResultIndex >= 0) {
             // If the user presses enter, and the box is open, and we have used arrows,
             // treat this just like a click on the listbox item
             const selectedId = this._searchResults[this._focusedResultIndex].id;
@@ -274,11 +280,9 @@ export default class Lookup extends LightningElement {
     }
 
     handleRemoveSelectedItem(event) {
-        //Note: replace the condition with hooks https://www.lightningdesignsystem.com/platforms/lightning/styling-hooks/
         if (this.disabled) {
             return;
         }
-
         const recordId = event.currentTarget.name;
         this._curSelection = this._curSelection.filter((item) => item.id !== recordId);
         // Process selection update
@@ -296,11 +300,48 @@ export default class Lookup extends LightningElement {
         this.processSelectionUpdate(true);
     }
 
+    handleNewRecordClick(event) {
+        const objectApiName = event.currentTarget.dataset.sobject;
+        const selection = this.newRecordOptions.find((option) => option.value === objectApiName);
+
+        const preNavigateCallback = selection.preNavigateCallback
+            ? selection.preNavigateCallback
+            : () => Promise.resolve();
+        preNavigateCallback(selection).then(() => {
+            this[NavigationMixin.Navigate]({
+                type: 'standard__objectPage',
+                attributes: {
+                    objectApiName,
+                    actionName: 'new'
+                },
+                state: {
+                    defaultFieldValues: selection.defaults
+                }
+            });
+        });
+    }
+
     // STYLE EXPRESSIONS
+
+    get hasResults() {
+        return this._searchResults.length > 0;
+    }
+
+    get getFormElementClass() {
+        return this.variant === VARIANT_LABEL_INLINE
+            ? 'slds-form-element slds-form-element_horizontal'
+            : 'slds-form-element';
+    }
+
+    get getLabelClass() {
+        return this.variant === VARIANT_LABEL_HIDDEN
+            ? 'slds-form-element__label slds-assistive-text'
+            : 'slds-form-element__label';
+    }
 
     get getContainerClass() {
         let css = 'slds-combobox_container slds-has-inline-listbox ';
-        if (this._hasFocus && this.hasResults()) {
+        if (this._hasFocus && this.hasResults) {
             css += 'slds-has-input-focus ';
         }
         if (this.errors.length > 0) {
@@ -311,9 +352,9 @@ export default class Lookup extends LightningElement {
 
     get getDropdownClass() {
         let css = 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ';
-        const isSearchTermValid = this._cleanSearchTerm && this._cleanSearchTerm.length >= this.minimalSearchTermLength;
 
-        if (this._hasFocus && this.isSelectionAllowed() && (isSearchTermValid || this.hasResults())) {
+        const isSearchTermValid = this._cleanSearchTerm && this._cleanSearchTerm.length >= this.minSearchTermLength;
+        if (this._hasFocus && this.isSelectionAllowed() && (isSearchTermValid || this.hasResults)) {
             css += 'slds-is-open';
         }
         return css;
