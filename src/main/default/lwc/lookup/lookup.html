@@ -1,6 +1,8 @@
 <template>
     <div class={getFormElementClass}>
-        <span if:true={hasMoreResultsToDisplay} class="slds-float_right slds-text-body_small">Please refine your search to see more results</span>
+        <span if:true={hasMoreResultsToDisplay} class="slds-float_right slds-text-body_small"
+            >Please refine your search to see more results</span
+        >
         <label if:true={label} class={getLabelClass} for="combobox">
             <abbr if:true={required} title="required" class="slds-required">*</abbr>
             {label}
@@ -12,7 +14,12 @@
                     <!-- Search input start -->
                     <div class={getComboboxClass} role="none">
                         <template if:false={isMultiEntry}>
-                            <c-resource-icon name={getSelectIconName} resources={iconResources} size="small" class={getSelectIconClass}>
+                            <c-resource-icon
+                                name={getSelectIconName}
+                                resources={iconResources}
+                                size="small"
+                                class={getSelectIconClass}
+                            >
                             </c-resource-icon>
                         </template>
 
@@ -88,7 +95,12 @@
                                         data-recordid={item.result.id}
                                     >
                                         <span class="slds-media__figure">
-                                            <c-resource-icon name={item.result.icon} size="small" resources={iconResources}> </c-resource-icon>
+                                            <c-resource-icon
+                                                name={item.result.icon}
+                                                size="small"
+                                                resources={iconResources}
+                                            >
+                                            </c-resource-icon>
                                         </span>
                                         <span class="slds-media__body">
                                             <span class="slds-listbox__option-text_entity">
@@ -167,7 +179,11 @@
                                     onremove={handleRemoveSelectedItem}
                                     name={item.id}
                                 >
-                                    <c-resource-icon name={item.icon} size="x-small" resources={iconResources}></c-resource-icon>
+                                    <c-resource-icon
+                                        name={item.icon}
+                                        size="x-small"
+                                        resources={iconResources}
+                                    ></c-resource-icon>
                                 </lightning-pill>
                             </li>
                         </template>
@@ -179,7 +195,7 @@
             <!-- Errors start -->
             <template for:each={errors} for:item="error">
                 <label key={error.id} role="alert" class="slds-form-element__label slds-var-m-top_xx-small form-error"
-                >{error.message}</label
+                    >{error.message}</label
                 >
             </template>
             <!-- Errors end -->

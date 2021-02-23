@@ -1,6 +1,5 @@
 const { createLookupElement, inputSearchTerm, SAMPLE_SEARCH_ITEMS } = require('./lookupTest.utils');
 
-const EMPTY_SEARCH_STRING = '';
 const SAMPLE_SEARCH_TOO_SHORT = 'A ';
 const SAMPLE_SEARCH_RAW = 'Sample search* ';
 const SAMPLE_SEARCH_CLEAN = 'sample search';

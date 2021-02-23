@@ -141,7 +141,10 @@ describe('c-lookup rendering', () => {
             disabled: true,
             selection: SAMPLE_SEARCH_ITEMS[0]
         });
-        lookupEl.errors = [{id: '1', message: 'First error message'}, {id: '2', message: 'Second error message'} ]
+        lookupEl.errors = [
+            { id: '1', message: 'First error message' },
+            { id: '2', message: 'Second error message' }
+        ];
         document.body.appendChild(lookupEl);
 
         // Verify errors
