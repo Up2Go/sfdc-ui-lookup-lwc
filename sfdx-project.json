@@ -33,7 +33,7 @@
     ],
     "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "49.0",
+    "sourceApiVersion": "50.0",
     "packageAliases": {
         "sfdx-ui-lookup-lwc": "0Ho1T000000PAu4SAG",
         "sfdx-ui-lookup-lwc@0.1.0-1": "04t1T000000Rcw0QAC",
