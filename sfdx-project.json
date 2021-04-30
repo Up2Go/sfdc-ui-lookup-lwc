@@ -1,47 +1,11 @@
 {
     "packageDirectories": [
-        {
-            "path": "submodules\\fflib-apex-mocks\\sfdx-source"
-        },
-        {
-            "path": "submodules\\fflib-apex-common\\sfdx-source"
-        },
-        {
-            "path": "submodules\\up2go-clean\\sfdx-source\\up2go-clean"
-        },
-        {
-            "path": "src",
-            "default": true,
-            "package": "sfdx-ui-lookup-lwc",
-            "versionName": "ver 0.1",
-            "versionNumber": "0.1.0.NEXT",
-            "dependencies": [
-                {
-                    "package": "04t1T000000RcxwQAC"
-                },
-                {
-                    "package": "04t1T000000Rcy1QAC"
-                },
-                {
-                    "package": "04t1T000000RcyGQAS"
-                }
-            ]
-        },
-        {
-            "path": "src-sample"
-        }
+        { "path": "submodules/fflib-apex-mocks/sfdx-source" },
+        { "path": "submodules/fflib-apex-common/sfdx-source" },
+        { "path": "submodules/up2go-clean/sfdx-source/up2go-clean" },
+        { "path": "src", "default": true },
+        { "path": "src-sample" }
     ],
-    "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "49.0",
-    "packageAliases": {
-        "sfdx-ui-lookup-lwc": "0Ho1T000000PAu4SAG",
-        "sfdx-ui-lookup-lwc@0.1.0-1": "04t1T000000Rcw0QAC",
-        "sfdx-ui-lookup-lwc@0.1.0-2": "04t1T000000RcwFQAS",
-        "sfdx-ui-lookup-lwc@0.1.0-3": "04t1T000000RcwKQAS",
-        "sfdx-ui-lookup-lwc@0.1.0-4": "04t1T000000RcwUQAS",
-        "sfdx-ui-lookup-lwc@0.1.0-5": "04t1T000000RcweQAC",
-        "sfdx-ui-lookup-lwc@0.1.0-6": "04t1T000000RcwoQAC",
-        "sfdx-ui-lookup-lwc@0.1.0-7": "04t1T000000RcyLQAS"
-    }
+    "sourceApiVersion": "50.0"
 }

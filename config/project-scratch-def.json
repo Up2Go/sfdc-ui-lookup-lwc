@@ -1,6 +1,6 @@
 {
     "orgName": "pozil",
-    "edition": "Developer",
+    "edition": "Partner Developer",
     "language": "en_US",
     "hasSampleData": true,
     "settings": {
@@ -9,6 +9,9 @@
         },
         "mobileSettings": {
             "enableS1EncryptedStoragePref2": false
+        },
+        "chatterSettings": {
+            "enableChatter": true
         }
     }
 }
