@@ -11,7 +11,8 @@ const VARIANT_LABEL_STACKED = 'label-stacked';
 const VARIANT_LABEL_INLINE = 'label-inline';
 const VARIANT_LABEL_HIDDEN = 'label-hidden';
 
-const REGEX_TRAP = /[+\\?^${}()|[\]\\]/g;
+const REGEX_SOSL_RESERVED = /(\?|&|\||!|\{|\}|\[|\]|\(|\)|\^|~|\*|:|"|\+|-|\\)/g;
+const REGEX_EXTRA_TRAP = /(\$|\\)/g;
 
 export default class Lookup extends NavigationMixin(LightningElement) {
     // Public properties
@@ -54,7 +55,6 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     set selection(initialSelection) {
         this._curSelection = Array.isArray(initialSelection) ? initialSelection : [initialSelection];
         this.processSelectionUpdate(false);
-        this._hasFocus = false;
     }
 
     get selection() {
@@ -67,9 +67,12 @@ export default class Lookup extends NavigationMixin(LightningElement) {
         // Reset the spinner
         this.loading = false;
         // Clone results before modifying them to avoid Locker restriction
-        const resultsLocal = JSON.parse(JSON.stringify(results));
+        let resultsLocal = JSON.parse(JSON.stringify(results));
+        // Remove selected items from search results
+        const selectedIds = this._curSelection.map((sel) => sel.id);
+        resultsLocal = resultsLocal.filter((result) => selectedIds.indexOf(result.id) === -1);
         // Format results
-        const cleanSearchTerm = this._searchTerm.replace(REGEX_TRAP, '');
+        const cleanSearchTerm = this._searchTerm.replace(REGEX_SOSL_RESERVED, '.?').replace(REGEX_EXTRA_TRAP, '\\$1');
         const regex = new RegExp(`(${cleanSearchTerm})`, 'gi');
 
         const splicedResults = resultsLocal.splice(0, this.maxDisplayedResults);
@@ -131,8 +134,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
         this._searchTerm = newSearchTerm;
 
         // Compare clean new search term with current one and abort if identical
-        const newCleanSearchTerm = newSearchTerm.trim().replace(/\*/g, '').toLowerCase();
-
+        const newCleanSearchTerm = newSearchTerm.trim().replace(REGEX_SOSL_RESERVED, '?').toLowerCase();
         if (this._cleanSearchTerm === newCleanSearchTerm) {
             return;
         }
@@ -140,8 +142,8 @@ export default class Lookup extends NavigationMixin(LightningElement) {
         // Save clean search term
         this._cleanSearchTerm = newCleanSearchTerm;
 
-        // Ignore search terms that are too small
-        if (newCleanSearchTerm.length < this.minSearchTermLength) {
+        // Ignore search terms that are too small after removing special characters
+        if (newCleanSearchTerm.replace(/\?/g, '').length < this.minSearchTermLength) {
             this.setSearchResults(this._defaultSearchResults);
             return;
         }
@@ -185,15 +187,16 @@ export default class Lookup extends NavigationMixin(LightningElement) {
         // Reset search
         this._cleanSearchTerm = '';
         this._searchTerm = '';
-        // Remove selected items from default search results
-        const selectedIds = this._curSelection.map((sel) => sel.id);
-        let defaultResults = [...this._defaultSearchResults];
-        defaultResults = defaultResults.filter((result) => selectedIds.indexOf(result.id) === -1);
-        this.setSearchResults(defaultResults);
+        this.setSearchResults([...this._defaultSearchResults]);
         // Indicate that component was interacted with
         this._isDirty = isUserInteraction;
+        // Blur input after single select lookup selection
+        if (!this.isMultiEntry && this.hasSelection()) {
+            this._hasFocus = false;
+        }
         // If selection was changed by user, notify parent components
         if (isUserInteraction) {
+            const selectedIds = this._curSelection.map((sel) => sel.id);
             this.dispatchEvent(new CustomEvent('selectionchange', { detail: selectedIds }));
         }
     }
@@ -342,10 +345,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     }
 
     get getContainerClass() {
-        let css = 'slds-combobox_container slds-has-inline-listbox ';
-        if (this._hasFocus && this.hasResults) {
-            css += 'slds-has-input-focus ';
-        }
+        let css = 'slds-combobox_container ';
         if (this.errors.length > 0) {
             css += 'has-custom-error';
         }
@@ -354,9 +354,12 @@ export default class Lookup extends NavigationMixin(LightningElement) {
 
     get getDropdownClass() {
         let css = 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ';
-
         const isSearchTermValid = this._cleanSearchTerm && this._cleanSearchTerm.length >= this.minSearchTermLength;
-        if (this._hasFocus && this.isSelectionAllowed() && (isSearchTermValid || this.hasResults)) {
+        if (
+            this._hasFocus &&
+            this.isSelectionAllowed() &&
+            (isSearchTermValid || this.hasResults || this.newRecordOptions.length)
+        ) {
             css += 'slds-is-open';
         }
         return css;
@@ -364,6 +367,9 @@ export default class Lookup extends NavigationMixin(LightningElement) {
 
     get getInputClass() {
         let css = 'slds-input slds-combobox__input has-custom-height ';
+        if (this._hasFocus && this.hasResults) {
+            css += 'slds-has-focus ';
+        }
         if (this.errors.length > 0 || (this._isDirty && this.required && !this.hasSelection())) {
             css += 'has-custom-error ';
         }
@@ -423,8 +429,9 @@ export default class Lookup extends NavigationMixin(LightningElement) {
 
     get getListboxClass() {
         return (
-            'slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid ' +
-            (this.scrollAfterNItems ? 'slds-dropdown_length-with-icon-' + this.scrollAfterNItems : '')
+            'slds-dropdown ' +
+            (this.scrollAfterNItems ? `slds-dropdown_length-with-icon-${this.scrollAfterNItems} ` : '') +
+            'slds-dropdown_fluid'
         );
     }
 

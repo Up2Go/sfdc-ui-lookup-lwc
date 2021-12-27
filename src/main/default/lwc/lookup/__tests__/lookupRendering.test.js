@@ -1,4 +1,4 @@
-const { createLookupElement, flushPromises, SAMPLE_SEARCH_ITEMS } = require('./lookupTest.utils');
+const { createLookupElement, flushPromises, SAMPLE_SEARCH_ITEMS, LABEL_NO_RESULTS } = require('./lookupTest.utils');
 
 describe('c-lookup rendering', () => {
     afterEach(() => {
@@ -14,7 +14,7 @@ describe('c-lookup rendering', () => {
         // Query for rendered list items
         const listItemEls = lookupEl.shadowRoot.querySelectorAll('li');
         expect(listItemEls.length).toBe(1);
-        expect(listItemEls[0].textContent).toBe('No results.');
+        expect(listItemEls[0].textContent).toBe(LABEL_NO_RESULTS);
     });
 
     it('shows default search results by default', async () => {
@@ -23,7 +23,7 @@ describe('c-lookup rendering', () => {
         await flushPromises();
 
         // Query for rendered list items
-        const listItemEls = lookupEl.shadowRoot.querySelectorAll('span[role=option]');
+        const listItemEls = lookupEl.shadowRoot.querySelectorAll('div[role=option]');
         expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
         expect(listItemEls[0].dataset.recordid).toBe(SAMPLE_SEARCH_ITEMS[0].id);
     });
@@ -123,6 +123,30 @@ describe('c-lookup rendering', () => {
         expect(selPills.length).toBe(2);
         expect(selPills[0].title).toBe(SAMPLE_SEARCH_ITEMS[0].title);
         expect(selPills[1].title).toBe(SAMPLE_SEARCH_ITEMS[1].title);
+    });
+
+    it('does not shows default search results when they are already selected', async () => {
+        const lookupEl = createLookupElement({
+            isMultiEntry: true,
+            selection: SAMPLE_SEARCH_ITEMS
+        });
+        lookupEl.setDefaultResults(SAMPLE_SEARCH_ITEMS);
+        await flushPromises();
+
+        // Query for rendered list items
+        const listItemEls = lookupEl.shadowRoot.querySelectorAll('li span.slds-media__body');
+        expect(listItemEls.length).toBe(1);
+        expect(listItemEls[0].textContent).toBe(LABEL_NO_RESULTS);
+    });
+
+    it('renders new record creation option when no selection', () => {
+        const lookupEl = createLookupElement({ newRecordOptions: [{ value: 'Account', label: 'New Account' }] });
+
+        // Query for rendered list items
+        const listItemEls = lookupEl.shadowRoot.querySelectorAll('li span.slds-media__body');
+        expect(listItemEls.length).toBe(2);
+        expect(listItemEls[0].textContent).toBe('No results.');
+        expect(listItemEls[1].textContent).toBe('New Account');
     });
 
     it('can be disabled', () => {
