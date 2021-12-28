@@ -1,11 +1,17 @@
 {
     "packageDirectories": [
-        { "path": "submodules/fflib-apex-mocks/sfdx-source" },
-        { "path": "submodules/fflib-apex-common/sfdx-source" },
-        { "path": "submodules/up2go-clean/sfdx-source/up2go-clean" },
-        { "path": "src", "default": true },
-        { "path": "src-sample" }
+        {
+            "path": "src",
+            "default": true
+        },
+        {
+            "path": "src-sample"
+        },
+        {
+            "path": "submodules/up2go-clean/sfdx-source/up2go-clean"
+        }
     ],
+    "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "50.0"
+    "sourceApiVersion": "53.0"
 }

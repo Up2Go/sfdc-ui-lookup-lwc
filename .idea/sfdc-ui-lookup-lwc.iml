@@ -18,13 +18,10 @@
       <sourceFolder url="file://$MODULE_DIR$/config" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src-sample" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/submodules/fflib-apex-common/sfdx-source/apex-common/main" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/submodules/fflib-apex-common/sfdx-source/apex-common/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/submodules/fflib-apex-mocks/sfdx-source/apex-mocks/main" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/submodules/fflib-apex-mocks/sfdx-source/apex-mocks/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/submodules/up2go-clean/sfdx-source/up2go-clean/main/default" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/submodules/up2go-clean/sfdx-source/up2go-clean/main/test" isTestSource="true" />
     </content>
+    <orderEntry type="jdk" jdkName="IlluminatedCloud (sfdc-ui-lookup-lwc/lookup-lwc)" jdkType="IlluminatedCloud" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
