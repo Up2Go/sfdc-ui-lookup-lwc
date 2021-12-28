@@ -63,7 +63,7 @@ describe('c-lookup event fires', () => {
         // Simulate search term input
         inputSearchTerm(lookupEl, SAMPLE_SEARCH_TOO_SHORT_SPECIAL);
 
-        // Check that search event isn't fired
+        // Check that search event wasn't fired
         expect(mockSearchFn).not.toBeCalled();
     });
 

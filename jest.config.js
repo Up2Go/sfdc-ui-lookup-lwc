@@ -6,5 +6,5 @@ module.exports = {
         '^c/resourceIcon$':
             '<rootDir>/submodules/up2go-clean/sfdx-source/up2go-clean/main/default/lwc/resourceIcon/resourceIcon'
     },
-    testMatch: ['**/__tests__/**/*.test.js']
+    testMatch: ['<rootDir>/src/**/__tests__/**/*.test.js']
 };

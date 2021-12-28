@@ -6,6 +6,5 @@
 .localdevserver
 node_modules
 coverage
-/.idea/codeStyles/
-/.idea/.gitignore
-/.idea/inspectionProfiles/
+/IlluminatedCloud/
+/.idea/

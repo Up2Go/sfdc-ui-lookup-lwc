@@ -1,9 +1,3 @@
-[submodule "submodules/fflib-apex-mocks"]
-	path = submodules/fflib-apex-mocks
-	url = git@github.com:Up2Go/fflib-apex-mocks.git
-[submodule "submodules/fflib-apex-common"]
-	path = submodules/fflib-apex-common
-	url = git@github.com:Up2Go/fflib-apex-common.git
 [submodule "submodules/up2go-clean"]
 	path = submodules/up2go-clean
 	url = git@github.com:Up2Go/up2go-clean.git

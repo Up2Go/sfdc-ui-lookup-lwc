@@ -226,7 +226,7 @@ describe('c-lookup rendering', () => {
 
         // Query for rendered list items
         return Promise.resolve().then(() => {
-            const listItemEls = lookupEl.shadowRoot.querySelectorAll('span[role=option]');
+            const listItemEls = lookupEl.shadowRoot.querySelectorAll('div[role=option]');
             expect(listItemEls.length).toBe(1);
             expect(listItemEls[0].dataset.recordid).toBe(SAMPLE_SEARCH_ITEMS[0].id);
         });
